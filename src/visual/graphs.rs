@@ -1,0 +1,199 @@
+//! Graphs - ASCII art control flow
+
+use colored::*;
+use rand::Rng;
+
+use crate::core::state::ShellState;
+
+/// Show graph - VV command
+pub fn show_graph(state: &mut ShellState) {
+    let addr = state.current_address;
+    
+    println!();
+    
+    // Random graph type
+    let mut rng = rand::thread_rng();
+    let graph_type = rng.r#gen_range(0..5);
+    
+    match graph_type {
+        0 => show_simple_graph(addr),
+        1 => show_complex_graph(addr),
+        2 => show_tiny_graph(addr),
+        3 => show_chaos_graph(),
+        _ => show_error_graph(),
+    }
+}
+
+fn show_simple_graph(addr: u64) {
+    println!("{}", "╔═══════════════════════════════════════════════════════════════════╗".bright_cyan());
+    println!("{}", "║                    CONTROL FLOW GRAPH                            ║".bright_cyan());
+    println!("{}", "║                  (artist's interpretation)                       ║".bright_cyan().dimmed());
+    println!("{}", "╚═══════════════════════════════════════════════════════════════════╝".bright_cyan());
+    println!();
+
+    let block_art = format!(r#"
+                        ┌─────────────────────────────────┐
+                        │  0x{:08x} [entry]           │
+                        │  push rbp                       │
+                        │  mov rbp, rsp                   │
+                        │  sub rsp, 0x40                  │
+                        │  cmp edi, 0                     │
+                        └─────────────┬───────────────────┘
+                                      │
+                           ┌──────────┴──────────┐
+                           │                     │
+                           ▼                     ▼
+              ┌────────────────────┐   ┌────────────────────┐
+              │ 0x{:08x}        │   │ 0x{:08x}        │
+              │ [true branch]      │   │ [false branch]     │
+              │ mov eax, 1         │   │ xor eax, eax       │
+              │ ; success path     │   │ ; failure path     │
+              └─────────┬──────────┘   └─────────┬──────────┘
+                        │                        │
+                        └──────────┬─────────────┘
+                                   │
+                                   ▼
+                        ┌─────────────────────────────────┐
+                        │  0x{:08x} [exit]            │
+                        │  leave                          │
+                        │  ret                            │
+                        │  ; back to reality              │
+                        └─────────────────────────────────┘
+"#, addr, addr + 0x20, addr + 0x40, addr + 0x60);
+
+    println!("{}", block_art);
+    println!("{}", "Blocks: 4 | Edges: 4 | Complexity: Moderate | Reality: Questionable".dimmed());
+}
+
+fn show_complex_graph(_addr: u64) {
+    println!("{}", "╔══════════════════════════════════════════════════╗".yellow());
+    println!("{}", "║         COMPLEX CONTROL FLOW DETECTED            ║".yellow());
+    println!("{}", "╚══════════════════════════════════════════════════╝".yellow());
+    println!();
+    
+    let chaos_art = r#"
+                    ┌───────┐
+                    │ entry │
+                    └───┬───┘
+                        │
+          ┌─────────────┼─────────────┐
+          │             │             │
+          ▼             ▼             ▼
+     ┌────────┐   ┌────────┐   ┌────────┐
+     │ bb_01  │──▶│ bb_02  │──▶│ bb_03  │
+     └────┬───┘   └────┬───┘   └────┬───┘
+          │            │            │
+          │     ┌──────┴──────┐     │
+          │     ▼             ▼     │
+          │ ┌────────┐ ┌────────┐   │
+          │ │ bb_04  │ │ bb_05  │   │
+          │ └────┬───┘ └────┬───┘   │
+          │      │          │       │
+          │      └────┬─────┘       │
+          │           │             │
+          │           ▼             │
+          │     ┌────────────┐      │
+          └────▶│   loop_bb  │◀─────┘
+                └──────┬─────┘
+                       │
+                 ┌─────┴─────┐
+                 ▼           ▼
+           ┌────────┐  ┌────────┐
+           │  ret   │  │ panic! │
+           └────────┘  └────────┘
+"#;
+    
+    println!("{}", chaos_art.bright_white());
+    println!();
+    println!("{}", "Blocks: 10 | Edges: 15 | Loops: 1 | Sanity: Low".yellow());
+    println!("{}", "Note: This graph may not represent reality. Or maybe it does.".dimmed());
+}
+
+fn show_tiny_graph(addr: u64) {
+    println!("{}", "Graph for function @".dimmed());
+    println!("0x{:08x}", addr);
+    println!();
+    println!("{}", r#"
+    ┌───────────────┐
+    │    entry      │
+    │  push rbp     │
+    │  mov rbp,rsp  │
+    │  xor eax,eax  │
+    │  ret          │
+    └───────────────┘
+"#);
+    println!("{}", "That's it. That's the whole function.".dimmed());
+    println!("{}", "(It does absolutely nothing, efficiently)".dimmed());
+}
+
+fn show_chaos_graph() {
+    println!("{}", "╔═══════════════════════════════════════════════╗".red());
+    println!("{}", "║              SPAGHETTI CODE DETECTED          ║".red());
+    println!("{}", "╚═══════════════════════════════════════════════╝".red());
+    println!();
+    
+    let spaghetti = r#"
+                ┌───┐
+                │ A │──────────────────────────┐
+                └─┬─┘                          │
+                  │                            │
+        ┌─────────┼─────────┐                  │
+        │         │         │                  │
+        ▼         ▼         ▼                  │
+      ┌───┐     ┌───┐     ┌───┐               │
+   ┌──│ B │──▶──│ C │──▶──│ D │───┐           │
+   │  └─┬─┘     └─┬─┘     └─┬─┘   │           │
+   │    │    ┌────┘         │     │           │
+   │    ▼    ▼              │     │           │
+   │  ┌───┐◀───────────────┐│     │           │
+   │  │ E │                 ││    │           │
+   │  └─┬─┘◀───────────────┘│     │           │
+   │    │                    │     │           │
+   │    └────────────────────┼─────┘           │
+   │                         │                 │
+   ▼         ┌───────────────┘                 │
+  ┌───┐      │                                 │
+  │ F │◀─────┴─────────────────────────────────┘
+  └─┬─┘
+    │
+    ▼
+  ┌───┐
+  │ret│
+  └───┘
+"#;
+    
+    println!("{}", spaghetti.bright_white());
+    println!();
+    println!("{}", "This code was clearly written on a Friday at 4:59 PM.".yellow());
+    println!("{}", "Cyclomatic complexity: YES".red());
+}
+
+fn show_error_graph() {
+    println!("{}", "╔═══════════════════════════════════════════════╗".red());
+    println!("{}", "║               ERROR: GRAPH TOO COMPLEX        ║".red());
+    println!("{}", "╚═══════════════════════════════════════════════╝".red());
+    println!();
+    
+    let error_art = r#"
+                    ┌───────────────────────────┐
+                    │                           │
+                    │   ¯\_(ツ)_/¯              │
+                    │                           │
+                    │   Graph generation failed │
+                    │                           │
+                    │   Possible causes:        │
+                    │   • Screen too small      │
+                    │   • Budget too small      │
+                    │   • Brain too small       │
+                    │   • Code too spaghetti    │
+                    │                           │
+                    │   Try IDA Pro instead     │
+                    │   (just kidding, it's     │
+                    │    $2499)                 │
+                    │                           │
+                    └───────────────────────────┘
+"#;
+    
+    println!("{}", error_art.dimmed());
+    println!("{}", "Pro tip: Use your imagination. It's free and has better graphics.".yellow());
+}
