@@ -1,12 +1,6 @@
 # rr2 — Rust Reverse Engineering Framework
 
-```
-                 _____ 
- _ __ _ __ ___  |___ / 
-| '__| '__/ _ \   |_ \ 
-| |  | | |  __/  ___) |
-|_|  |_|  \___| |____/ 
-```
+![rr2 logo](./img/logo.jpg)
 
 **rr2** is a next-generation, memory-safe binary analysis framework written entirely in Rust. It delivers comprehensive reverse engineering capabilities — including multi-format binary parsing, deep code analysis, disassembly, decompilation, and an interactive REPL — at a level of performance and correctness that legacy C-based tooling fundamentally cannot achieve.
 
