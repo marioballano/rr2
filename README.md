@@ -33,7 +33,7 @@ rr2 is the result of years of research into static analysis, compiler theory, an
 **Requirements:** Rust 1.75 or later.
 
 ```bash
-git clone https://github.com/your-org/rr2
+git clone https://github.com/marioballano/rr2 
 cd rr2
 cargo build --release
 ```
